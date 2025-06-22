@@ -172,3 +172,17 @@ pagehelper.support-methods-arguments=true
 ## 授權說明
 
 本專案採用 MIT 授權條款，詳見 LICENSE 檔案。 
+
+## 關於我們
+
+我們主要專注在敏捷專案管理、物聯網（IoT）應用開發和領域驅動設計（DDD）。喜歡把先進技術和實務經驗結合，打造好用又靈活的軟體解決方案。近來也積極結合 AI 技術，推動自動化工作流，讓開發與運維更有效率、更智慧。持續學習與分享，希望能一起推動軟體開發的創新和進步。
+
+## 聯繫我們
+
+若有任何問題、合作或想了解更多，歡迎透過以下管道與我們聯繫：
+
+- FB 粉絲頁：[風清雲談 | Facebook](https://www.facebook.com/profile.php?id=61576838896062)
+- LinkedIn：[linkedin.com/in/chu-kuo-lung](https://www.linkedin.com/in/chu-kuo-lung)
+- YouTube 頻道：[雲談風清 - YouTube](https://www.youtube.com/channel/UCXDqLTdCMiCJ1j8xGRfwEig)
+- 風清雲談 部落格：[風清雲談](https://blog.fengqing.tw/)
+- 電子郵件：[fengqing.tw@gmail.com](mailto:fengqing.tw@gmail.com)
