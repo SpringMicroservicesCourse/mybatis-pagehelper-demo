@@ -1,5 +1,11 @@
 # MyBatis PageHelper 分頁查詢示範專案
 
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
+[![MyBatis](https://img.shields.io/badge/MyBatis-3.0.4-blue.svg)](https://mybatis.org/)
+[![PageHelper](https://img.shields.io/badge/PageHelper-2.1.1-red.svg)](https://pagehelper.github.io/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 ## 專案介紹
 
 本專案展示如何在 Spring Boot 應用程式中整合 MyBatis 與 PageHelper 進行資料庫分頁查詢。專案實作了兩種分頁方式：
@@ -28,7 +34,7 @@
 mybatis-pagehelper-demo/
 ├── src/
 │   ├── main/
-│   │   ├── java/tw/spring/data/mybatisdemo/
+│   │   ├── java/tw/fengqing/spring/data/mybatisdemo/
 │   │   │   ├── handler/
 │   │   │   │   └── MoneyTypeHandler.java          # Money 類型轉換處理器
 │   │   │   ├── mapper/
@@ -41,7 +47,7 @@ mybatis-pagehelper-demo/
 │   │       ├── data.sql                           # 測試資料
 │   │       └── schema.sql                         # 資料表結構
 │   └── test/
-│       └── java/tw/spring/data/mybatisdemo/
+│       └── java/tw/fengqing/spring/data/mybatisdemo/
 │           └── MybatisDemoApplicationTests.java   # 單元測試
 ├── pom.xml                                        # Maven 專案設定
 └── README.md                                      # 專案說明文件
@@ -121,7 +127,7 @@ public interface CoffeeMapper {
 
 ```properties
 # MyBatis 設定
-mybatis.type-handlers-package=tw.spring.data.mybatisdemo.handler
+mybatis.type-handlers-package=tw.fengqing.spring.data.mybatisdemo.handler
 mybatis.configuration.map-underscore-to-camel-case=true
 
 # PageHelper 分頁設定
@@ -177,6 +183,14 @@ pagehelper.support-methods-arguments=true
 
 我們主要專注在敏捷專案管理、物聯網（IoT）應用開發和領域驅動設計（DDD）。喜歡把先進技術和實務經驗結合，打造好用又靈活的軟體解決方案。近來也積極結合 AI 技術，推動自動化工作流，讓開發與運維更有效率、更智慧。持續學習與分享，希望能一起推動軟體開發的創新和進步。
 
+## 版本歷史
+
+- **v0.0.1-SNAPSHOT** (2025-01-27)
+  - 初始版本發布
+  - 實作 MyBatis PageHelper 分頁功能
+  - 整合 Joda Money 貨幣處理
+  - 完整的範例代碼和文件
+
 ## 聯繫我們
 
 若有任何問題、合作或想了解更多，歡迎透過以下管道與我們聯繫：
@@ -186,3 +200,7 @@ pagehelper.support-methods-arguments=true
 - YouTube 頻道：[雲談風清 - YouTube](https://www.youtube.com/channel/UCXDqLTdCMiCJ1j8xGRfwEig)
 - 風清雲談 部落格：[風清雲談](https://blog.fengqing.tw/)
 - 電子郵件：[fengqing.tw@gmail.com](mailto:fengqing.tw@gmail.com)
+
+---
+
+*最後更新：2025年1月27日*
