@@ -1,206 +1,545 @@
-# MyBatis PageHelper 分頁查詢示範專案
+# mybatis-pagehelper-demo
+
+> MyBatis PageHelper pagination with RowBounds and parameter methods
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
-[![MyBatis](https://img.shields.io/badge/MyBatis-3.0.4-blue.svg)](https://mybatis.org/)
-[![PageHelper](https://img.shields.io/badge/PageHelper-2.1.1-red.svg)](https://pagehelper.github.io/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/)
+[![MyBatis](https://img.shields.io/badge/MyBatis-3.0.5-red.svg)](https://mybatis.org/mybatis-3/)
+[![PageHelper](https://img.shields.io/badge/PageHelper-2.1.1-blue.svg)](https://pagehelper.github.io/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 專案介紹
+A comprehensive demonstration of MyBatis PageHelper featuring two pagination methods (RowBounds and parameters), PageInfo wrapper, and advanced configuration options.
 
-本專案展示如何在 Spring Boot 應用程式中整合 MyBatis 與 PageHelper 進行資料庫分頁查詢。專案實作了兩種分頁方式：
+## Features
 
-1. **RowBounds 分頁**：使用 MyBatis 原生的 RowBounds 進行分頁
-2. **PageHelper 分頁**：使用 PageHelper 套件進行更靈活的分頁處理
+- MyBatis PageHelper integration with Spring Boot Starter
+- RowBounds pagination method (MyBatis native style)
+- Parameter pagination method (RESTful API friendly)
+- PageInfo wrapper for complete pagination information
+- Advanced PageHelper configurations
+- Custom TypeHandler for Joda Money
+- H2 in-memory database with automatic data initialization
+- Demonstration of pageSize=0 behavior
 
-專案以咖啡店商品管理為例，展示如何對 `t_coffee` 資料表進行分頁查詢，並處理 `Money` 類型的價格欄位。
+## Tech Stack
 
-## 技術棧
+- Spring Boot 3.4.5
+- MyBatis Spring Boot Starter 3.0.5
+- PageHelper Spring Boot Starter 2.1.1
+- Java 21
+- H2 Database 2.3.232
+- Joda Money 2.0.2
+- Lombok
+- Maven 3.8+
 
-本專案主要依賴以下軟體與工具：
+## Getting Started
 
-- **Java 21**：主要開發語言
-- **Spring Boot 3.4.5**：應用程式框架
-- **MyBatis Spring Boot Starter 3.0.4**：ORM 框架
-- **PageHelper Spring Boot Starter 2.1.1**：分頁查詢套件
-- **Joda Money 2.0.2**：貨幣處理套件
-- **H2 Database**：內嵌式資料庫
-- **Lombok**：程式碼簡化工具
-- **Maven**：專案建置工具
+### Prerequisites
 
-## 專案結構
+- JDK 21 or higher
+- Maven 3.8+ (or use included Maven Wrapper)
 
-```
-mybatis-pagehelper-demo/
-├── src/
-│   ├── main/
-│   │   ├── java/tw/fengqing/spring/data/mybatisdemo/
-│   │   │   ├── handler/
-│   │   │   │   └── MoneyTypeHandler.java          # Money 類型轉換處理器
-│   │   │   ├── mapper/
-│   │   │   │   └── CoffeeMapper.java              # 咖啡資料存取介面
-│   │   │   ├── model/
-│   │   │   │   └── Coffee.java                    # 咖啡實體類別
-│   │   │   └── MybatisDemoApplication.java        # 主應用程式類別
-│   │   └── resources/
-│   │       ├── application.properties             # 應用程式設定檔
-│   │       ├── data.sql                           # 測試資料
-│   │       └── schema.sql                         # 資料表結構
-│   └── test/
-│       └── java/tw/fengqing/spring/data/mybatisdemo/
-│           └── MybatisDemoApplicationTests.java   # 單元測試
-├── pom.xml                                        # Maven 專案設定
-└── README.md                                      # 專案說明文件
-```
+### Quick Start
 
-## 快速開始
+**Step 1: Clone the repository**
 
-### 1. 克隆此倉庫：
 ```bash
 git clone https://github.com/SpringMicroservicesCourse/mybatis-pagehelper-demo
-```
-
-### 2. 進入專案目錄：
-```bash
 cd mybatis-pagehelper-demo
 ```
 
-### 3. 建置專案：
+**Step 2: Run the application**
+
 ```bash
-mvn clean compile
+./mvnw spring-boot:run
 ```
 
-### 4. 執行應用程式：
-```bash
-mvn spring-boot:run
-```
+## Pagination Methods
 
-### 5. 執行測試：
-```bash
-mvn test
-```
+### Method 1: RowBounds Pagination
 
-## 核心功能說明
+**Mapper Definition:**
 
-### MoneyTypeHandler 類型轉換器
-```java
-/**
- * 在 Money 與 Long 之間轉換的 TypeHandler，處理 TWD 台幣
- * 資料庫儲存以分為單位，應用程式使用 Money 物件
- */
-public class MoneyTypeHandler extends BaseTypeHandler<Money> {
-    // 將 Money 物件轉換為資料庫的 Long 值（以分為單位）
-    @Override
-    public void setNonNullParameter(PreparedStatement ps, int i, Money parameter, JdbcType jdbcType) throws SQLException {
-        ps.setLong(i, parameter.getAmountMinorLong());
-    }
-    
-    // 將資料庫的 Long 值轉換為 Money 物件
-    private Money parseMoney(Long value) {
-        return Money.of(CurrencyUnit.of("TWD"), value / 100.0);
-    }
-}
-```
-
-### 分頁查詢實作
 ```java
 @Mapper
 public interface CoffeeMapper {
-    // 使用 RowBounds 進行分頁查詢
     @Select("select * from t_coffee order by id")
     List<Coffee> findAllWithRowBounds(RowBounds rowBounds);
+}
+```
 
-    // 使用 PageHelper 進行分頁查詢
+**Usage:**
+
+```java
+// Page 1, 3 records per page
+RowBounds rowBounds = new RowBounds(1, 3);
+List<Coffee> page1 = coffeeMapper.findAllWithRowBounds(rowBounds);
+
+// Page 2, 3 records per page
+rowBounds = new RowBounds(2, 3);
+List<Coffee> page2 = coffeeMapper.findAllWithRowBounds(rowBounds);
+```
+
+**Advantages:**
+- ✅ MyBatis native API style
+- ✅ Perfect integration with MyBatis Generator
+- ✅ No @Param annotation needed
+- ✅ Clean method signature
+
+**Sample Output:**
+
+```
+Page(1) Coffee Coffee(id=1, name=espresso, price=TWD 100.00, ...)
+Page(1) Coffee Coffee(id=2, name=latte, price=TWD 125.00, ...)
+Page(1) Coffee Coffee(id=3, name=capuccino, price=TWD 125.00, ...)
+
+Page(2) Coffee Coffee(id=4, name=mocha, price=TWD 150.00, ...)
+Page(2) Coffee Coffee(id=5, name=macchiato, price=TWD 150.00, ...)
+```
+
+### Method 2: Parameter Pagination
+
+**Mapper Definition:**
+
+```java
+@Mapper
+public interface CoffeeMapper {
     @Select("select * from t_coffee order by id")
     List<Coffee> findAllWithParam(@Param("pageNum") int pageNum,
                                   @Param("pageSize") int pageSize);
 }
 ```
 
-## 進階說明
+**Usage:**
 
-### 環境變數
-請設定必要的環境變數，如資料庫連線字串、API 金鑰等，確保系統能正常運作。
+```java
+// Page 1, 3 records per page
+List<Coffee> page1 = coffeeMapper.findAllWithParam(1, 3);
 
-### 應用程式屬性設定
-根據不同環境（開發、測試、正式）調整 `application.properties` 中的參數：
+// Page 2, 3 records per page - Get PageInfo
+List<Coffee> page2 = coffeeMapper.findAllWithParam(2, 3);
+PageInfo<Coffee> pageInfo = new PageInfo<>(page2);
+```
+
+**Advantages:**
+- ✅ Explicit method signature
+- ✅ RESTful API friendly
+- ✅ No RowBounds object creation needed
+- ✅ Better for Controller layer
+
+**Sample Output:**
+
+```
+Page(1) Coffee Coffee(id=1, name=espresso, price=TWD 100.00, ...)
+Page(1) Coffee Coffee(id=2, name=latte, price=TWD 125.00, ...)
+Page(1) Coffee Coffee(id=3, name=capuccino, price=TWD 125.00, ...)
+```
+
+### PageInfo Details
+
+**PageInfo Wrapper:**
+
+```java
+List<Coffee> list = coffeeMapper.findAllWithParam(2, 3);
+PageInfo<Coffee> pageInfo = new PageInfo<>(list);
+
+System.out.println("Current Page: " + pageInfo.getPageNum());      // 2
+System.out.println("Page Size: " + pageInfo.getPageSize());        // 3
+System.out.println("Total Records: " + pageInfo.getTotal());       // 5
+System.out.println("Total Pages: " + pageInfo.getPages());         // 2
+System.out.println("Has Next: " + pageInfo.isHasNextPage());       // false
+```
+
+**Complete PageInfo Output:**
+
+```
+PageInfo{
+  pageNum=2,                    # Current page number
+  pageSize=3,                   # Records per page
+  size=2,                       # Actual records on current page
+  startRow=4,                   # Start row number
+  endRow=5,                     # End row number
+  total=5,                      # Total records
+  pages=2,                      # Total pages
+  list=[...],                   # Data list
+  prePage=1,                    # Previous page number
+  nextPage=0,                   # Next page number (0 = none)
+  isFirstPage=false,            # Is first page
+  isLastPage=true,              # Is last page
+  hasPreviousPage=true,         # Has previous page
+  hasNextPage=false,            # Has next page
+  navigatePages=8,              # Navigation page count
+  navigateFirstPage=1,          # First navigation page
+  navigateLastPage=2,           # Last navigation page
+  navigatepageNums=[1, 2]       # Navigation page numbers
+}
+```
+
+## Configuration
+
+### Application Properties
 
 ```properties
-# MyBatis 設定
+# MyBatis configuration
 mybatis.type-handlers-package=tw.fengqing.spring.data.mybatisdemo.handler
 mybatis.configuration.map-underscore-to-camel-case=true
 
-# PageHelper 分頁設定
-# 使用 RowBounds.offset 作為 pageNum
+# PageHelper configuration
+# Use RowBounds.offset as pageNum (not offset)
 pagehelper.offset-as-page-num=true
-# 合理化分頁參數，頁數小於1時查詢第一頁，頁數大於總頁數時查詢最後一頁
+
+# Rationalize pagination parameters
+# pageNum < 1 → query first page
+# pageNum > total pages → query last page
 pagehelper.reasonable=true
-# 允許 pageSize=0，返回所有結果
+
+# Allow pageSize=0 to return all results
 pagehelper.page-size-zero=true
-# 支援通過 Mapper 接口參數來傳遞分頁參數
+
+# Support pagination via method parameters
 pagehelper.support-methods-arguments=true
 ```
 
-### 外部服務連接
-若專案需連接第三方服務，請確認相關憑證與連線設定已正確配置。
+**Configuration Comparison:**
 
-## 常見問題與解決方案
+| Configuration | Description | Recommended | Effect |
+|---------------|-------------|-------------|--------|
+| `offset-as-page-num` | RowBounds.offset semantics | `true` | offset as page number (not offset) |
+| `reasonable` | Rationalize page parameters | `true` | Auto-adjust out-of-range pages |
+| `page-size-zero` | pageSize=0 behavior | `true` | Return all records |
+| `support-methods-arguments` | Method parameter pagination | `true` | Auto-detect pageNum/pageSize |
 
-### 1. 分頁查詢結果異常
-**問題原因**：PageHelper 設定不當
-**解決方案**：檢查 `application.properties` 中的 PageHelper 相關設定
+### Database Schema
 
-## 參考資源
+**schema.sql:**
 
-- [MyBatis 官方文件](https://mybatis.org/mybatis-3/)
-- [PageHelper 官方文件](https://pagehelper.github.io/)
-- [Spring Boot 官方文件](https://spring.io/projects/spring-boot)
-- [Joda Money 官方文件](https://www.joda.org/joda-money/)
+```sql
+create table t_coffee (
+    id bigint not null auto_increment,
+    name varchar(255),
+    price bigint not null,
+    create_time timestamp,
+    update_time timestamp,
+    primary key (id)
+);
+```
 
-## 注意事項
+**data.sql:**
 
-### 程式碼品質要求
-- 在重要的程式碼區塊添加清楚註解，方便團隊成員理解與維護
-- 使用台灣常用的專業用語，確保溝通順暢且符合本地習慣
-- 遵循 Java 命名規範，使用有意義的變數與方法名稱
+```sql
+insert into t_coffee (name, price, create_time, update_time) 
+  values ('espresso', 10000, now(), now());
+insert into t_coffee (name, price, create_time, update_time) 
+  values ('latte', 12500, now(), now());
+insert into t_coffee (name, price, create_time, update_time) 
+  values ('capuccino', 12500, now(), now());
+insert into t_coffee (name, price, create_time, update_time) 
+  values ('mocha', 15000, now(), now());
+insert into t_coffee (name, price, create_time, update_time) 
+  values ('macchiato', 15000, now(), now());
+```
 
-### 開發注意事項
-- 確保 MyBatis TypeHandler 包名設定正確
-- 測試時注意包名一致性
-- 分頁查詢時注意效能考量
-- 貨幣處理時注意精度問題
+**Note:** Price stored in cents (10000 = TWD 100.00)
 
-### 部署注意事項
-- 確認資料庫連線設定正確
-- 檢查應用程式屬性檔案設定
-- 驗證外部服務連線狀態
+## Usage
 
-## 授權說明
+### Application Flow
 
-本專案採用 MIT 授權條款，詳見 LICENSE 檔案。 
+```
+1. Spring Boot starts
+   ↓
+2. Auto-executes schema.sql & data.sql
+   ↓
+3. ApplicationRunner executes 4 demonstrations:
+   - Demo 1: RowBounds pagination (page 1 & 2)
+   - Demo 2: pageSize=0 behavior (returns all)
+   - Demo 3: Parameter pagination (page 1)
+   - Demo 4: PageInfo usage (page 2)
+```
 
-## 關於我們
+### Code Example
+
+```java
+@SpringBootApplication
+@MapperScan("tw.fengqing.spring.data.mybatisdemo.mapper")
+public class MybatisDemoApplication implements ApplicationRunner {
+    
+    @Autowired
+    private CoffeeMapper coffeeMapper;
+    
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        // Demo 1: RowBounds pagination
+        coffeeMapper.findAllWithRowBounds(new RowBounds(1, 3))
+                .forEach(c -> log.info("Page(1) Coffee {}", c));
+        coffeeMapper.findAllWithRowBounds(new RowBounds(2, 3))
+                .forEach(c -> log.info("Page(2) Coffee {}", c));
+        
+        // Demo 2: pageSize=0 returns all
+        coffeeMapper.findAllWithRowBounds(new RowBounds(1, 0))
+                .forEach(c -> log.info("Page(1) Coffee {}", c));
+        
+        // Demo 3: Parameter pagination
+        coffeeMapper.findAllWithParam(1, 3)
+                .forEach(c -> log.info("Page(1) Coffee {}", c));
+        
+        // Demo 4: PageInfo usage
+        List<Coffee> list = coffeeMapper.findAllWithParam(2, 3);
+        PageInfo<Coffee> page = new PageInfo<>(list);
+        log.info("PageInfo: {}", page);
+    }
+}
+```
+
+## Best Practices
+
+### 1. Method Selection Guide
+
+**Use RowBounds When:**
+- Working with MyBatis Generator
+- Internal service calls
+- Prefer MyBatis native API style
+- Don't need explicit pagination parameters in signature
+
+**Use Parameters When:**
+- Building RESTful APIs
+- Controller layer needs explicit pagination
+- Want clear method signatures
+- Working with Spring MVC
+
+### 2. Web API Integration
+
+```java
+@RestController
+@RequestMapping("/api/coffees")
+public class CoffeeController {
+    
+    @Autowired
+    private CoffeeMapper coffeeMapper;
+    
+    @GetMapping
+    public ResponseEntity<PageInfo<Coffee>> getCoffees(
+            @RequestParam(defaultValue = "1") int pageNum,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        
+        // Parameter validation
+        if (pageNum < 1) pageNum = 1;
+        if (pageSize < 1 || pageSize > 100) pageSize = 10;
+        
+        // Execute pagination query
+        List<Coffee> list = coffeeMapper.findAllWithParam(pageNum, pageSize);
+        PageInfo<Coffee> pageInfo = new PageInfo<>(list);
+        
+        return ResponseEntity.ok(pageInfo);
+    }
+}
+```
+
+**API Usage:**
+
+```bash
+# Query page 1, 10 records per page
+curl http://localhost:8080/api/coffees?pageNum=1&pageSize=10
+
+# Query page 2, 20 records per page
+curl http://localhost:8080/api/coffees?pageNum=2&pageSize=20
+```
+
+### 3. Configuration Recommendations
+
+**Development Environment:**
+
+```properties
+pagehelper.offset-as-page-num=true
+pagehelper.reasonable=true
+pagehelper.page-size-zero=true
+pagehelper.support-methods-arguments=true
+
+# Enable SQL logging for debugging
+logging.level.tw.fengqing.spring.data.mybatisdemo.mapper=DEBUG
+```
+
+**Production Environment:**
+
+```properties
+pagehelper.offset-as-page-num=true
+pagehelper.reasonable=true
+pagehelper.page-size-zero=false    # Security: don't allow query all
+pagehelper.support-methods-arguments=true
+
+# Disable detailed SQL logging
+logging.level.tw.fengqing.spring.data.mybatisdemo.mapper=WARN
+```
+
+### 4. Performance Optimization
+
+**Avoid COUNT Query:**
+
+```java
+// Don't execute COUNT query if not needed
+PageHelper.startPage(1, 10, false);  // false = skip COUNT
+List<Coffee> coffees = coffeeMapper.findAll();
+```
+
+**Add Indexes:**
+
+```sql
+-- Index for common sort columns
+CREATE INDEX idx_coffee_id ON t_coffee(id);
+CREATE INDEX idx_coffee_name ON t_coffee(name);
+CREATE INDEX idx_coffee_price ON t_coffee(price);
+```
+
+**Limit Max pageSize:**
+
+```java
+// Controller layer limit
+if (pageSize > 100) {
+    pageSize = 100;  // Maximum 100 records per page
+}
+```
+
+## Testing
+
+```bash
+# Run tests
+./mvnw test
+
+# Run application
+./mvnw spring-boot:run
+```
+
+## Key Components
+
+### MoneyTypeHandler
+
+```java
+/**
+ * TypeHandler for Money ↔ Long conversion (TWD currency)
+ * Database stores as cents, application uses Money object
+ */
+public class MoneyTypeHandler extends BaseTypeHandler<Money> {
+    @Override
+    public void setNonNullParameter(PreparedStatement ps, int i, 
+                                     Money parameter, JdbcType jdbcType) 
+                                     throws SQLException {
+        ps.setLong(i, parameter.getAmountMinorLong());
+    }
+    
+    private Money parseMoney(Long value) {
+        return Money.of(CurrencyUnit.of("TWD"), value / 100.0);
+    }
+}
+```
+
+### CoffeeMapper
+
+```java
+@Mapper
+public interface CoffeeMapper {
+    // RowBounds method
+    @Select("select * from t_coffee order by id")
+    List<Coffee> findAllWithRowBounds(RowBounds rowBounds);
+
+    // Parameter method
+    @Select("select * from t_coffee order by id")
+    List<Coffee> findAllWithParam(@Param("pageNum") int pageNum,
+                                  @Param("pageSize") int pageSize);
+}
+```
+
+**Important:** 
+- SQL doesn't include LIMIT/OFFSET
+- PageHelper automatically adds pagination syntax
+- Supports multiple databases (MySQL, PostgreSQL, Oracle, H2, etc.)
+
+## Common Issues
+
+### Issue 1: Pagination Not Working
+
+**Problem:** Returns all records instead of paginated results
+
+**Causes:**
+- `support-methods-arguments=false`
+- Parameter names not `pageNum` and `pageSize`
+
+**Solution:**
+
+```properties
+# Ensure parameter support is enabled
+pagehelper.support-methods-arguments=true
+```
+
+Or use explicit pagination:
+
+```java
+PageHelper.startPage(pageNum, pageSize);
+List<Coffee> coffees = coffeeMapper.findAll();
+```
+
+### Issue 2: Multiple Query Pagination
+
+**Problem:** Subsequent queries also paginated after `PageHelper.startPage()`
+
+**Cause:** PageHelper uses ThreadLocal to store pagination parameters
+
+**Solution:**
+
+```java
+try {
+    PageHelper.startPage(1, 10);
+    List<Coffee> coffees = coffeeMapper.findAll();
+    // Process results
+} finally {
+    PageHelper.clearPage();  // Clear pagination parameters
+}
+```
+
+Or use parameter method (auto-clears):
+
+```java
+List<Coffee> coffees = coffeeMapper.findAllWithParam(1, 10);
+```
+
+## Method Comparison
+
+| Method | SQL Execution | COUNT Query | Performance | Use Case |
+|--------|--------------|-------------|-------------|----------|
+| **RowBounds** | Auto LIMIT | Auto COUNT | Normal | MyBatis Generator |
+| **Parameters** | Auto LIMIT | Auto COUNT | Normal | Custom Mapper, Web API |
+
+**Note:** PageHelper executes 2 SQL queries:
+1. COUNT query for total records
+2. SELECT query with LIMIT for data
+
+## References
+
+- [MyBatis PageHelper Documentation](https://pagehelper.github.io/)
+- [PageHelper GitHub](https://github.com/pagehelper/Mybatis-PageHelper)
+- [PageHelper Spring Boot Starter](https://github.com/pagehelper/pagehelper-spring-boot)
+- [MyBatis Documentation](https://mybatis.org/mybatis-3/)
+- [Joda Money Documentation](https://www.joda.org/joda-money/)
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## About Us
 
 我們主要專注在敏捷專案管理、物聯網（IoT）應用開發和領域驅動設計（DDD）。喜歡把先進技術和實務經驗結合，打造好用又靈活的軟體解決方案。近來也積極結合 AI 技術，推動自動化工作流，讓開發與運維更有效率、更智慧。持續學習與分享，希望能一起推動軟體開發的創新和進步。
 
-## 版本歷史
+## Contact
 
-- **v0.0.1-SNAPSHOT** (2025-01-27)
-  - 初始版本發布
-  - 實作 MyBatis PageHelper 分頁功能
-  - 整合 Joda Money 貨幣處理
-  - 完整的範例代碼和文件
+**風清雲談** - 專注於敏捷專案管理、物聯網（IoT）應用開發和領域驅動設計（DDD）。
 
-## 聯繫我們
-
-若有任何問題、合作或想了解更多，歡迎透過以下管道與我們聯繫：
-
-- FB 粉絲頁：[風清雲談 | Facebook](https://www.facebook.com/profile.php?id=61576838896062)
-- LinkedIn：[linkedin.com/in/chu-kuo-lung](https://www.linkedin.com/in/chu-kuo-lung)
-- YouTube 頻道：[雲談風清 - YouTube](https://www.youtube.com/channel/UCXDqLTdCMiCJ1j8xGRfwEig)
-- 風清雲談 部落格：[風清雲談](https://blog.fengqing.tw/)
-- 電子郵件：[fengqing.tw@gmail.com](mailto:fengqing.tw@gmail.com)
+- 🌐 官方網站：[風清雲談部落格](https://blog.fengqing.tw/)
+- 📘 Facebook：[風清雲談粉絲頁](https://www.facebook.com/profile.php?id=61576838896062)
+- 💼 LinkedIn：[Chu Kuo-Lung](https://www.linkedin.com/in/chu-kuo-lung)
+- 📺 YouTube：[雲談風清頻道](https://www.youtube.com/channel/UCXDqLTdCMiCJ1j8xGRfwEig)
+- 📧 Email：[fengqing.tw@gmail.com](mailto:fengqing.tw@gmail.com)
 
 ---
+
+**⭐ 如果這個專案對您有幫助，歡迎給個 Star！**
 
 *最後更新：2025年1月27日*

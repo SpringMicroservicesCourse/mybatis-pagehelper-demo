@@ -1,4 +1,4 @@
-package tw.spring.data.mybatisdemo.model;
+package tw.fengqing.spring.data.mybatisdemo.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

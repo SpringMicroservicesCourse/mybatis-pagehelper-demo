@@ -1,4 +1,4 @@
-package tw.spring.data.mybatisdemo;
+package tw.fengqing.spring.data.mybatisdemo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,6 +1,6 @@
-package tw.spring.data.mybatisdemo.mapper;
+package tw.fengqing.spring.data.mybatisdemo.mapper;
 
-import tw.spring.data.mybatisdemo.model.Coffee;
+import tw.fengqing.spring.data.mybatisdemo.model.Coffee;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

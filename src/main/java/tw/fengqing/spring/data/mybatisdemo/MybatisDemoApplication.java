@@ -1,8 +1,8 @@
-package tw.spring.data.mybatisdemo;
+package tw.fengqing.spring.data.mybatisdemo;
 
 import com.github.pagehelper.PageInfo;
-import tw.spring.data.mybatisdemo.mapper.CoffeeMapper;
-import tw.spring.data.mybatisdemo.model.Coffee;
+import tw.fengqing.spring.data.mybatisdemo.mapper.CoffeeMapper;
+import tw.fengqing.spring.data.mybatisdemo.model.Coffee;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.RowBounds;
 import org.mybatis.spring.annotation.MapperScan;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @SpringBootApplication
 @Slf4j
-@MapperScan("tw.spring.data.mybatisdemo.mapper")
+@MapperScan("tw.fengqing.spring.data.mybatisdemo.mapper")
 public class MybatisDemoApplication implements ApplicationRunner {
 	@Autowired
 	private CoffeeMapper coffeeMapper;
@@ -27,23 +27,30 @@ public class MybatisDemoApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		log.info("===================測試 RowBounds 分頁結果===================/");
+		
 		coffeeMapper.findAllWithRowBounds(new RowBounds(1, 3))
 				.forEach(c -> log.info("Page(1) Coffee {}", c));
 		coffeeMapper.findAllWithRowBounds(new RowBounds(2, 3))
 				.forEach(c -> log.info("Page(2) Coffee {}", c));
 
-		log.info("===================");
+		log.info("===================測試 PageHelper 分頁結果===================");
 
 		coffeeMapper.findAllWithRowBounds(new RowBounds(1, 0))
 				.forEach(c -> log.info("Page(1) Coffee {}", c));
 
-		log.info("===================");
+		log.info("===================測試參數分頁結果===================");
 
 		coffeeMapper.findAllWithParam(1, 3)
-				.forEach(c -> log.info("Page(1) Coffee {}", c));
+			.forEach(c -> log.info("Page(1) Coffee {}", c));
+		
+		
+		log.info("===================測試 PageInfo 使用===================");
+			
 		List<Coffee> list = coffeeMapper.findAllWithParam(2, 3);
-		PageInfo page = new PageInfo(list);
-		log.info("PageInfo: {}", page);
+		PageInfo<Coffee> page = new PageInfo<>(list);
+		
+		log.info("PageInfo: {}", page);	
 	}
 }
 

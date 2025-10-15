@@ -1,4 +1,4 @@
-package tw.spring.data.mybatisdemo.handler;
+package tw.fengqing.spring.data.mybatisdemo.handler;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
