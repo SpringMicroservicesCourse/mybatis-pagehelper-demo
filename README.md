@@ -541,5 +541,3 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ---
 
 **⭐ 如果這個專案對您有幫助，歡迎給個 Star！**
-
-*最後更新：2025年1月27日*
